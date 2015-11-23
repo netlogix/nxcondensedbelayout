@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.0" xmlns:t3="http://typo3.org/schemas/xliff">
+	<file t3:id="1423570162" source-language="en" datatype="plaintext" original="messages" date="2015-02-10T13:08:00Z" product-name="nxcondensedbelayout">
+		<header/>
+		<body>
+
+			<trans-unit id="tt_content.createTranslation">
+				<source xml:lang="en">Create translation</source>
+			</trans-unit>
+
+		</body>
+	</file>
+</xliff>
