@@ -112,10 +112,13 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 		$result = parent::tt_content_drawItem($row, $isRTE);
 		if ($this->allowLanguageNotificationLinesForRecord($row)) {
 			$translations = array();
-			$translationRows = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordsByField('tt_content', 'l18n_parent', $row['uid']);
+			$translationRows = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordsByField('tt_content', 'l18n_parent', $row['uid'], '', '', 'uid ASC');
 			if ($translationRows) {
 				foreach ($translationRows as $translationRow) {
-					$translations[$translationRow['sys_language_uid']] = $translationRow;
+					// This "if" is an actual "limit 1 per language"
+					if (!isset($translations[$translationRow['sys_language_uid']])) {
+						$translations[$translationRow['sys_language_uid']] = $translationRow;
+					}
 				}
 			}
 			$languageLines = array();
