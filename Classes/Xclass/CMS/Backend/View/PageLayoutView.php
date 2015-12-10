@@ -80,7 +80,7 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 			$this->tt_contentConfig['languageCols'] = array();
 		}
 
-		$skipTranslations = $GLOBALS['BE_USER']->getTSConfig('mod.web_layout.skipTranslations', \TYPO3\CMS\Backend\Utility\BackendUtility::getPagesTSconfig((int)$pageLayoutController->id))['properties'];
+		$skipTranslations = (array)$GLOBALS['BE_USER']->getTSConfig('mod.web_layout.skipTranslations', \TYPO3\CMS\Backend\Utility\BackendUtility::getPagesTSconfig((int)$pageLayoutController->id))['properties'];
 		foreach ($skipTranslations as $skipTranslation) {
 			foreach ($skipTranslation as $columnName => $options) {
 				$skipTranslation[$columnName] = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $options);
@@ -89,7 +89,7 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 		}
 
 		/** @var $pageRenderer \TYPO3\CMS\Core\Page\PageRenderer */
-		$pageRenderer = $this->getPageLayoutController()->doc->getPageRenderer();
+		$pageRenderer = $this->getPageRenderer();
 		$pageRenderer->addCssInlineBlock('nxcondensedbelayout-languages', '.t3-page-ce .t3-row-header .ce-icons, .t3-page-ce .t3-row-header .ce-icons-left {visibility: visible !important;}');
 		$pageRenderer->addJsInlineCode(__CLASS__, self::POSITION_RUNNER);
 
@@ -211,7 +211,7 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 	 */
 	protected function linkLocalizeContent($str, $row, $languageId) {
 		$params = '&cmd[tt_content][' . $row['uid'] . '][localize]=' . $languageId;
-		$onClick = 'window.location.href=\'' . $this->getPageLayoutController()->doc->issueCommand($params) . '\'; return false;';
+		$onClick = 'window.location.href=\'' . $this->getLinkToDataHandlerAction($params) . '\'; return false;';
 		return sprintf('<a href="#" onclick="%s">%s</a>', htmlspecialchars($onClick), $str);
 	}
 
@@ -348,9 +348,32 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 				$label = 'hide';
 			}
 			$params = '&data[tt_content][' . $row['uid'] . '][' . $hiddenField . ']=' . $value;
-			$out = '<a href="' . htmlspecialchars($this->getPageLayoutController()->doc->issueCommand($params)) . '" title="' . $this->getLanguageService()->getLL($label, TRUE) . '">' . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-edit-' . strtolower($label)) . '</a>';
+			$out = '<a href="' . htmlspecialchars($this->getLinkToDataHandlerAction($params)) . '" title="' . $this->getLanguageService()->getLL($label, TRUE) . '">' . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-edit-' . strtolower($label)) . '</a>';
 		}
 		return $out;
+	}
+
+	/**
+	 * @param $params
+	 * @return string
+	 */
+	protected function getLinkToDataHandlerAction($params) {
+		if (\TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger(TYPO3_version) > 7000000) {
+			return \TYPO3\CMS\Backend\Utility\BackendUtility::getLinkToDataHandlerAction($params);
+		} else {
+			return $this->getPageLayoutController()->doc->issueCommand($params);
+		}
+	}
+
+	/**
+	 * @return \TYPO3\CMS\Core\Page\PageRenderer
+	 */
+	protected function getPageRenderer() {
+		if (\TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger(TYPO3_version) > 7000000) {
+			return $this->getPageLayoutController()->getModuleTemplate()->getPageRenderer();
+		} else {
+			return $this->getPageLayoutController()->doc->getPageRenderer();
+		}
 	}
 
 }
