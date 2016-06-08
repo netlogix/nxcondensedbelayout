@@ -167,7 +167,7 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 			return parent::makeQueryArray($table, $id, $addWhere, $fieldList);
 		}
 
-		$pattern = '%^ AND colPos = -1 AND tx_gridelements_container IN \\(\d+(,\d+)*\\) AND tx_gridelements_columns=\d+ AND tt_content.deleted=0%ims';
+		$pattern = '%^ AND colPos\\s*=\\s*-1 AND tx_gridelements_container IN \\(\\d+(,\\s*\\d+)*\\) AND tx_gridelements_columns\\s*=\\s*\\d+ AND tt_content.deleted\\s*=\\s*0%ims';
 		if (preg_match($pattern, $addWhere, $matches)) {
 			return parent::makeQueryArray($table, $id, $matches[0] . ' ' . $this->getLanguageRestrictionWhereClause(), $fieldList);
 		}
