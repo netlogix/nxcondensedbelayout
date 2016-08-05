@@ -17,4 +17,3 @@ if (!defined ('TYPO3_MODE')) {
 
 $GLOBALS['TCA']['tt_content']['ctrl']['copyAfterDuplFields'] = ',' . \TYPO3\CMS\Core\Utility\GeneralUtility::rmFromList('sys_language_uid', $GLOBALS['TCA']['tt_content']['ctrl']['copyAfterDuplFields']) . ',';
 $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['itemsProcFunc'] = 'Netlogix\\Nxcondensedbelayout\\Xclass\\Gridelements\\Backend\\ItemsProcFuncs\\CTypeList->itemsProcFunc';
-
