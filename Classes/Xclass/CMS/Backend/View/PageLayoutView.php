@@ -138,7 +138,11 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 				} else {
 					$lineContent = $this->linkLocalizeContent($this->getLanguageService()->sL('LLL:EXT:nxcondensedbelayout/Resources/Private/Language/Backend.xlf:tt_content.createTranslation'), $row, $languageId);
 					$languageIcon = $this->linkLocalizeContent($this->languageFlag($languageId, FALSE), $row, $languageId);
-					$buttonIcon = $this->linkLocalizeContent(\TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-page-new'), $row, $languageId);
+					if (class_exists('\TYPO3\CMS\Core\Imaging\IconFactory')) {
+						$buttonIcon = $this->linkLocalizeContent(\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Core\Imaging\IconFactory')->getIcon('actions-page-new', \TYPO3\CMS\Core\Imaging\Icon::SIZE_SMALL), $row, $languageId);
+					} else {
+						$buttonIcon = $this->linkLocalizeContent(\TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-page-new'), $row, $languageId);
+					}
 					$class = 'create-new-translation';
 				}
 
