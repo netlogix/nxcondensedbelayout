@@ -13,3 +13,8 @@ foreach (array('tx_gridelements_children', 'tx_gridelements_container', 'tx_grid
 	}
 
 }
+
+if (TYPO3_MODE == 'BE') {
+    // Register wizard hook to manipulate gridelements default language
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook'][] = 'EXT:nxcondensedbelayout/Classes/Hooks/WizardItems.php:Netlogix\\Nxcondensedbelayout\\Hooks\\WizardItems';
+}
