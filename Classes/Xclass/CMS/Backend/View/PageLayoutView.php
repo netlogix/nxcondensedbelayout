@@ -96,6 +96,18 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 	}
 
 	/**
+	 * Renders Content Elements from the tt_content table from page id
+	 *
+	 * @param int $id Page id
+	 * @return string HTML for the listing
+	 */
+	public function getTable_tt_content($id) {
+		$content = parent::getTable_tt_content($id);
+		$language = $this->languageSelector($id);
+		return $language . $content;
+	}
+
+	/**
 	 * Draws the preview content for a content element
 	 *
 	 * @param string $row Content element
