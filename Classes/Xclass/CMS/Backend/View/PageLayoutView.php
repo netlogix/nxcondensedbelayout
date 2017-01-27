@@ -76,7 +76,7 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 
 		$language = (int)$pageLayoutController->current_sys_language;
 		if ($this->validModuleConfig() && $language <= 0) {
-			$this->tt_contentConfig['languageMode'] = 1;
+			$this->tt_contentConfig['languageMode'] = 0;
 			$this->tt_contentConfig['languageCols'] = array();
 		}
 
