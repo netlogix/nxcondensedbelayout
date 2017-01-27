@@ -76,7 +76,7 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 
 		$language = (int)$pageLayoutController->current_sys_language;
 		if ($this->validModuleConfig() && $language <= 0) {
-			$this->tt_contentConfig['languageMode'] = 1;
+			$this->tt_contentConfig['languageMode'] = 0;
 			$this->tt_contentConfig['languageCols'] = array();
 		}
 
@@ -93,6 +93,18 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 		$pageRenderer->addCssInlineBlock('nxcondensedbelayout-languages', '.t3-page-ce .t3-row-header .ce-icons, .t3-page-ce .t3-row-header .ce-icons-left {visibility: visible !important;}');
 		$pageRenderer->addJsInlineCode(__CLASS__, self::POSITION_RUNNER);
 
+	}
+
+	/**
+	 * Renders Content Elements from the tt_content table from page id
+	 *
+	 * @param int $id Page id
+	 * @return string HTML for the listing
+	 */
+	public function getTable_tt_content($id) {
+		$content = parent::getTable_tt_content($id);
+		$language = $this->languageSelector($id);
+		return $language . $content;
 	}
 
 	/**
