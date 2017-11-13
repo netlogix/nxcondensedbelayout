@@ -44,7 +44,7 @@ class CTypeList extends \GridElementsTeam\Gridelements\Backend\ItemsProcFuncs\CT
 	 *
 	 * @param array $params
 	 */
-	public function itemsProcFunc(&$params) {
+	public function itemsProcFunc(array &$params) {
 
 		$considerLanguageParentDataForL10NMode = $this->considerLanguageParentDataForL10NMode($params['table'], $params['row']);
 
