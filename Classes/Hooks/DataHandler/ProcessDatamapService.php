@@ -25,17 +25,26 @@ namespace Netlogix\Nxcondensedbelayout\Hooks\DataHandler;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Database\DatabaseConnection;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  */
-class ProcessDatamapService implements \TYPO3\CMS\Core\SingletonInterface
+class ProcessDatamapService implements SingletonInterface
 {
+    protected $remember = [];
+
     /**
-     * @param \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler
+     * @param DataHandler $dataHandler
      */
     public function processDatamap_beforeStart($dataHandler)
     {
         $this->skipIndividualShortcutsForDifferentLanguages($dataHandler);
         $this->skipLanguageOverwriteForPastedRecords($dataHandler);
+        $this->transformGridNestingToTranslationChildren($dataHandler);
     }
 
     /**
@@ -46,7 +55,7 @@ class ProcessDatamapService implements \TYPO3\CMS\Core\SingletonInterface
      * @param string $table table name
      * @param integer $recordUid id of the record
      * @param array $fields fieldArray
-     * @param \TYPO3\CMS\Core\DataHandling\DataHandler $parentObject parent Object
+     * @param DataHandler $parentObject parent Object
      *
      * @return void
      */
@@ -55,14 +64,14 @@ class ProcessDatamapService implements \TYPO3\CMS\Core\SingletonInterface
         $table,
         $recordUid,
         array $fields,
-        \TYPO3\CMS\Core\DataHandling\DataHandler $parentObject
+        DataHandler $parentObject
     ) {
         if ($table !== 'tt_content' || !array_key_exists('tx_gridelements_backend_layout',
                 $fields) || substr($recordUid, 0, 3) === 'NEW') {
             return;
         }
 
-        /** @var \TYPO3\CMS\Core\Database\DatabaseConnection $db */
+        /** @var DatabaseConnection $db */
         $db = $GLOBALS['TYPO3_DB'];
         $db->sql_query(sprintf('
 			UPDATE
@@ -89,11 +98,11 @@ class ProcessDatamapService implements \TYPO3\CMS\Core\SingletonInterface
      * All shortcut records for every translation of the source are skipped because the
      * default language shortcut handles those as well.
      *
-     * @param \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler
+     * @param DataHandler $dataHandler
      */
     protected function skipIndividualShortcutsForDifferentLanguages($dataHandler)
     {
-        if (!\TYPO3\CMS\Core\Utility\GeneralUtility::_GET('DDcopy')) {
+        if (!GeneralUtility::_GET('DDcopy')) {
             // Gridelements "insert as reference" is indicated by the "DDcopy" argument.
             return;
         }
@@ -123,11 +132,11 @@ class ProcessDatamapService implements \TYPO3\CMS\Core\SingletonInterface
      * Updating such a container from "langauge = -1" to "language = 0" while
      * copying just doesn't make much sense.
      *
-     * @param \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler
+     * @param DataHandler $dataHandler
      */
     protected function skipLanguageOverwriteForPastedRecords($dataHandler)
     {
-        if (\TYPO3\CMS\Core\Utility\GeneralUtility::_GET('ajaxID') !== '/ajax/record/process') {
+        if (GeneralUtility::_GET('ajaxID') !== '/ajax/record/process') {
             return;
         }
         foreach ($dataHandler->cmdmap as $tablename => $commands) {
@@ -141,6 +150,41 @@ class ProcessDatamapService implements \TYPO3\CMS\Core\SingletonInterface
                     }
                     unset($dataHandler->cmdmap[$tablename][$commandId][$actionName]['update']['sys_language_uid']);
                 }
+            }
+        }
+    }
+
+    /**
+     * In case we're moving tt_content and adjust container, columns and colPos all at the
+     * same time, chances are that's the chained operation of a "past into" action.
+     * Translated records are copied as well but don't point at the same container target
+     * as the translation source. Instead, they point to the original container.
+     *
+     * @param DataHandler $dataHandler
+     */
+    protected function transformGridNestingToTranslationChildren($dataHandler)
+    {
+        if (!isset($dataHandler->datamap['tt_content'])) {
+            return;
+        }
+
+        $requiredKeys = ['tx_gridelements_container', 'tx_gridelements_columns', 'colPos'];
+        foreach ($dataHandler->datamap['tt_content'] as $recordUid => $record) {
+            if (substr($recordUid, 0, 3) === 'NEW') {
+                continue;
+            }
+
+            $copyFields = array_intersect_key($record, array_flip($requiredKeys));
+            if (count($copyFields) !== count($requiredKeys)) {
+                continue;
+            }
+
+            $translationRecords = BackendUtility::getRecordsByField('tt_content', $GLOBALS['TCA']['tt_content']['ctrl']['transOrigPointerField'], $recordUid);
+            foreach (array_column($translationRecords, 'uid') as $translationUid) {
+                $dataHandler->datamap['tt_content'][$translationUid] = array_merge(
+                    $dataHandler->datamap['tt_content'][$translationUid] ?? [],
+                    $copyFields
+                );
             }
         }
     }
