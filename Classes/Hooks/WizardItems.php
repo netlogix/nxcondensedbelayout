@@ -17,6 +17,7 @@ namespace Netlogix\Nxcondensedbelayout\Hooks;
 use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\Wizard\NewContentElementWizardHookInterface;
+use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
@@ -44,7 +45,8 @@ class WizardItems implements NewContentElementWizardHookInterface
         } else {
             // Load page TSconfig.
             $pageTSconfig = BackendUtility::getPagesTSconfig($queryString['id']);
-            $typoscriptService = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Service\TypoScriptService');
+            /** @var TypoScriptService $typoscriptService */
+            $typoscriptService = GeneralUtility::makeInstance(TypoScriptService::class);
 
             $language = ObjectAccess::getPropertyPath(
                 $typoscriptService->convertTypoScriptArrayToPlainArray($pageTSconfig),

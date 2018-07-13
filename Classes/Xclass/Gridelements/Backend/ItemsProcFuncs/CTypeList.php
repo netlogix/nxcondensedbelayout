@@ -24,6 +24,8 @@ namespace Netlogix\Nxcondensedbelayout\Xclass\Gridelements\Backend\ItemsProcFunc
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
+use TYPO3\CMS\Backend\Utility\BackendUtility;
+
 /**
  * Class/Function which manipulates the item-array for table/field tt_content CType.
  */
@@ -51,7 +53,7 @@ class CTypeList extends \GridElementsTeam\Gridelements\Backend\ItemsProcFuncs\CT
 		if ($considerLanguageParentDataForL10NMode) {
 			$row = $params['row'];
 
-			$languageParent = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('tt_content', $row['l18n_parent']);
+			$languageParent = BackendUtility::getRecord('tt_content', $row['l18n_parent']);
 			if ($languageParent) {
 				foreach ($this->excludeFromLocalizationColumnNames as $columnName) {
 					$params['row'][$columnName] = $languageParent[$columnName];
