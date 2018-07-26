@@ -24,6 +24,7 @@ namespace Netlogix\Nxcondensedbelayout\Xclass\CMS\Backend\View;
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
+use TYPO3\CMS\Backend\Controller\PageLayoutController;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -77,6 +78,10 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 		parent::__construct();
 
 		$pageLayoutController = $this->getPageLayoutController();
+
+		if(!$pageLayoutController instanceof PageLayoutController) {
+			return false;
+		}
 
 		$language = (int)$pageLayoutController->current_sys_language;
 		if ($this->validModuleConfig() && $language <= 0) {
