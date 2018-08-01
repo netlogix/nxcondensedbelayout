@@ -2,6 +2,14 @@
 
 namespace Netlogix\Nxcondensedbelayout\Xclass\Gridelements\Hooks;
 
+/*
+ * This file is part of the Netlogix.Nxcondensedbelayout extension.
+ *
+ * This package is Open Source Software. For the full copyright and license
+ * information, please view the LICENSE file which was distributed with this
+ * source code.
+ */
+
 use GridElementsTeam\Gridelements\Hooks as Gridelements;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Database\Connection;
