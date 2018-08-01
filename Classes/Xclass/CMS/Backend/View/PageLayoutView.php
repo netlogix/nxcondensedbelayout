@@ -321,7 +321,7 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 		if ($row['l10n_source']) {
 			return FALSE;
 		}
-		if ($row['sys_language_uid'] > 0) {
+		if ($row['sys_language_uid'] !== 0) {
 			return FALSE;
 		}
 

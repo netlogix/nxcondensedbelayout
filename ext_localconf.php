@@ -13,6 +13,10 @@ call_user_func(function() {
 		'className' => \Netlogix\Nxcondensedbelayout\Xclass\Gridelements\DataHandler\PreProcessFieldArray::class,
 	];
 
+	$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\GridElementsTeam\Gridelements\Hooks\DrawItem::class] = [
+		'className' => \Netlogix\Nxcondensedbelayout\Xclass\Gridelements\Hooks\DrawItem::class,
+	];
+
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/backend.php']['renderPreProcess'][] = sprintf('%s->includeJavaScript', \Netlogix\Nxcondensedbelayout\Hooks\BackendController\PositionService::class);
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = \Netlogix\Nxcondensedbelayout\Hooks\DataHandler\ProcessDatamapService::class;
 });
