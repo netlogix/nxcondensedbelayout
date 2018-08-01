@@ -11,7 +11,6 @@ use TYPO3\CMS\Core\Database\Query\Restriction\StartTimeRestriction;
 
 class DrawItem extends Gridelements\DrawItem
 {
-
 	/**
 	 * @inheritdoc
 	 */

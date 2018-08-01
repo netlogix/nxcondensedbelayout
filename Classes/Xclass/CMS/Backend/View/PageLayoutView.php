@@ -1,32 +1,32 @@
 <?php
+
 namespace Netlogix\Nxcondensedbelayout\Xclass\CMS\Backend\View;
 
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2015 Stephan Schuler <stephan.schuler@netlogix.de>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+ *  Copyright notice
+ *
+ *  (c) 2015 Stephan Schuler <stephan.schuler@netlogix.de>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 
 use TYPO3\CMS\Backend\Controller\PageLayoutController;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 
@@ -34,7 +34,8 @@ use TYPO3\CMS\Core\Utility\MathUtility;
  * The backend page layout now displays all available languages in one
  * condensed mode.
  */
-class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
+class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
+{
 
 	const TABLE_TEMPLATE = '<table class="t3-table table table-hover table-striped nxcondensedbelayout-languages">%s</table>';
 
@@ -74,12 +75,13 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 	 * UI elements but overrule the "languageCols" to empty to avoid
 	 * additional language columns.
 	 */
-	public function __construct() {
+	public function __construct()
+	{
 		parent::__construct();
 
 		$pageLayoutController = $this->getPageLayoutController();
 
-		if(!$pageLayoutController instanceof PageLayoutController) {
+		if (!$pageLayoutController instanceof PageLayoutController) {
 			return false;
 		}
 
@@ -89,7 +91,8 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 			$this->tt_contentConfig['languageCols'] = [];
 		}
 
-		$skipTranslations = (array)$this->getBackendUser()->getTSConfig('mod.web_layout.skipTranslations', BackendUtility::getPagesTSconfig((int)$pageLayoutController->id))['properties'];
+		$skipTranslations = (array)$this->getBackendUser()->getTSConfig('mod.web_layout.skipTranslations',
+			BackendUtility::getPagesTSconfig((int)$pageLayoutController->id))['properties'];
 		foreach ($skipTranslations as $skipTranslation) {
 			foreach ($skipTranslation as $columnName => $options) {
 				$skipTranslation[$columnName] = GeneralUtility::trimExplode(',', $options);
@@ -98,7 +101,8 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 		}
 
 		$pageRenderer = $this->getPageRenderer();
-		$pageRenderer->addCssInlineBlock('nxcondensedbelayout-languages', '.t3-page-ce .t3-row-header .ce-icons, .t3-page-ce .t3-row-header .ce-icons-left {visibility: visible !important;}');
+		$pageRenderer->addCssInlineBlock('nxcondensedbelayout-languages',
+			'.t3-page-ce .t3-row-header .ce-icons, .t3-page-ce .t3-row-header .ce-icons-left {visibility: visible !important;}');
 		$pageRenderer->addJsInlineCode(__CLASS__, self::POSITION_RUNNER);
 
 	}
@@ -109,7 +113,8 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 	 * @param int $id Page id
 	 * @return string HTML for the listing
 	 */
-	public function getTable_tt_content($id) {
+	public function getTable_tt_content($id)
+	{
 		$content = parent::getTable_tt_content($id);
 		$language = $this->languageSelector($id);
 		return $language . $content;
@@ -122,7 +127,8 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 	 * @return string HTML
 	 * @throws \UnexpectedValueException
 	 */
-	public function tt_content_drawItem($row) {
+	public function tt_content_drawItem($row)
+	{
 
 		if (!$this->validModuleConfig()) {
 			return parent::tt_content_drawItem($row);
@@ -139,20 +145,27 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 
 				$editVisibilityIcon = '';
 				if ($translations[$languageId]) {
-					$lineContent = $this->linkEditContent(BackendUtility::getRecordTitle('tt_content', $translations[$languageId]), $translations[$languageId]);
-					$languageIcon = $this->linkEditContent($this->languageFlag($languageId, FALSE), $translations[$languageId]);
-					$buttonIcon = $this->linkEditContent($this->iconFactory->getIcon('actions-document-open', 'small'), $translations[$languageId]);
+					$lineContent = $this->linkEditContent(BackendUtility::getRecordTitle('tt_content',
+						$translations[$languageId]), $translations[$languageId]);
+					$languageIcon = $this->linkEditContent($this->languageFlag($languageId, false),
+						$translations[$languageId]);
+					$buttonIcon = $this->linkEditContent($this->iconFactory->getIcon('actions-document-open', 'small'),
+						$translations[$languageId]);
 					$editVisibilityIcon = $this->getHideUnhideContent($translations[$languageId]);
 					$hiddenField = $GLOBALS['TCA']['tt_content']['ctrl']['enablecolumns']['disabled'];
 					$class = 'edit-existing-record' . ($translations[$languageId][$hiddenField] ? ' t3-page-ce t3-page-ce-hidden' : '');
 				} else {
-					$lineContent = $this->linkLocalizeContent($this->getLanguageService()->sL('LLL:EXT:nxcondensedbelayout/Resources/Private/Language/Backend.xlf:tt_content.createTranslation'), $row, $languageId);
-					$languageIcon = $this->linkLocalizeContent($this->languageFlag($languageId, FALSE), $row, $languageId);
-					$buttonIcon = $this->linkLocalizeContent(GeneralUtility::makeInstance('TYPO3\CMS\Core\Imaging\IconFactory')->getIcon('actions-page-new', \TYPO3\CMS\Core\Imaging\Icon::SIZE_SMALL), $row, $languageId);
+					$lineContent = $this->linkLocalizeContent($this->getLanguageService()->sL('LLL:EXT:nxcondensedbelayout/Resources/Private/Language/Backend.xlf:tt_content.createTranslation'),
+						$row, $languageId);
+					$languageIcon = $this->linkLocalizeContent($this->languageFlag($languageId, false), $row,
+						$languageId);
+					$buttonIcon = $this->linkLocalizeContent(GeneralUtility::makeInstance('TYPO3\CMS\Core\Imaging\IconFactory')->getIcon('actions-page-new',
+						\TYPO3\CMS\Core\Imaging\Icon::SIZE_SMALL), $row, $languageId);
 					$class = 'create-new-translation';
 				}
 
-				$languageLines[] = sprintf(self::ROW_TEMPLATE, ($lineCounter + 3), $class, $languageIcon, $buttonIcon, $editVisibilityIcon, $lineContent);
+				$languageLines[] = sprintf(self::ROW_TEMPLATE, ($lineCounter + 3), $class, $languageIcon, $buttonIcon,
+					$editVisibilityIcon, $lineContent);
 			}
 
 			$result .= sprintf(self::TABLE_TEMPLATE, join('', $languageLines));
@@ -176,7 +189,8 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 	 * @return array Returns query array
 	 * @todo Define visibility
 	 */
-	public function makeQueryArray($table, $id, $addWhere = '', $fieldList = '*') {
+	public function makeQueryArray($table, $id, $addWhere = '', $fieldList = '*')
+	{
 
 		if (!$this->validModuleConfig()) {
 			return parent::makeQueryArray($table, $id, $addWhere, $fieldList);
@@ -184,7 +198,8 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 
 		$pattern = '%^ AND colPos\\s*=\\s*-1 AND tx_gridelements_container IN \\(\\d+(,\\s*\\d+)*\\) AND tx_gridelements_columns\\s*=\\s*\\d+ AND (.*)tt_content.deleted\\s*=\\s*0%ims';
 		if (preg_match($pattern, $addWhere, $matches)) {
-			return parent::makeQueryArray($table, $id, $matches[0] . ' ' . $this->getLanguageRestrictionWhereClause(), $fieldList);
+			return parent::makeQueryArray($table, $id, $matches[0] . ' ' . $this->getLanguageRestrictionWhereClause(),
+				$fieldList);
 		}
 
 		return parent::makeQueryArray($table, $id, $addWhere, $fieldList);
@@ -202,17 +217,20 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 	 * @param string $additionalWhereClause Additional where clause for database select
 	 * @return array Associative array for each column (colPos)
 	 */
-	protected function getContentRecordsPerColumn($table, $id, array $columns, $additionalWhereClause = '') {
+	protected function getContentRecordsPerColumn($table, $id, array $columns, $additionalWhereClause = '')
+	{
 
 		if (!$this->validModuleConfig()) {
 			return parent::getContentRecordsPerColumn($table, $id, $columns, $additionalWhereClause);
 		}
 
-		if ($table !== 'table' || $this->getSelectedLanguage() === NULL || $additionalWhereClause !== sprintf('`sys_language_uid` IN (%d, -1)', $this->getSelectedLanguage())) {
+		if ($table !== 'table' || $this->getSelectedLanguage() === null || $additionalWhereClause !== sprintf('`sys_language_uid` IN (%d, -1)',
+				$this->getSelectedLanguage())) {
 			return parent::getContentRecordsPerColumn($table, $id, $columns, $additionalWhereClause);
 		}
 
-		return parent::getContentRecordsPerColumn($table, $id, $columns, 'l10n_source = 0' . $this->getLanguageRestrictionWhereClause());
+		return parent::getContentRecordsPerColumn($table, $id, $columns,
+			'l10n_source = 0' . $this->getLanguageRestrictionWhereClause());
 	}
 
 	/**
@@ -225,7 +243,8 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 	 * @param int $languageId
 	 * @return string
 	 */
-	protected function linkLocalizeContent($str, $row, $languageId) {
+	protected function linkLocalizeContent($str, $row, $languageId)
+	{
 		$params = '&cmd[tt_content][' . $row['uid'] . '][localize]=' . $languageId;
 		$onClick = 'window.location.href=\'' . BackendUtility::getLinkToDataHandlerAction($params) . '\'; return false;';
 		return sprintf('<a href="#" onclick="%s">%s</a>', htmlspecialchars($onClick), $str);
@@ -237,7 +256,8 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 	 *
 	 * @return array
 	 */
-	protected function getLanguagesForPage() {
+	protected function getLanguagesForPage()
+	{
 
 		static $languages = [];
 
@@ -267,11 +287,12 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 	 *
 	 * @return string
 	 */
-	protected function getLanguageRestrictionWhereClause() {
+	protected function getLanguageRestrictionWhereClause()
+	{
 
 		$allowedLanguages = [0, -1];
 
-		foreach ($this->getLanguagesForPage() as  $languageId => $languageRecord) {
+		foreach ($this->getLanguagesForPage() as $languageId => $languageRecord) {
 			$allowedLanguages[] = (int)$languageId;
 		}
 
@@ -285,14 +306,15 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 	 *
 	 * @return bool
 	 */
-	public function validModuleConfig() {
+	public function validModuleConfig()
+	{
 		$pageLayoutController = $this->getPageLayoutController();
 		if ((int)$pageLayoutController->MOD_SETTINGS['function'] !== 1) {
 			/* Only the former "Columns" view gets adjusted. "Languages" and "QuickEdit" stay the way they are. */
-			return FALSE;
+			return false;
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	/**
@@ -300,9 +322,10 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 	 *
 	 * @return bool|int
 	 */
-	public function getSelectedLanguage() {
+	public function getSelectedLanguage()
+	{
 		if (!MathUtility::canBeInterpretedAsInteger($this->tt_contentConfig['sys_language_uid'])) {
-			return NULL;
+			return null;
 
 		} else {
 			return (int)$this->tt_contentConfig['sys_language_uid'];
@@ -317,34 +340,36 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 	 * @param $row
 	 * @return bool
 	 */
-	protected function allowLanguageNotificationLinesForRecord($row) {
+	protected function allowLanguageNotificationLinesForRecord($row)
+	{
 		if ($row['l10n_source']) {
-			return FALSE;
+			return false;
 		}
 		if ($row['sys_language_uid'] !== 0) {
-			return FALSE;
+			return false;
 		}
 
 		foreach ($this->skipTranslations as $skipTranslation) {
-			$matches = TRUE;
+			$matches = true;
 			foreach ($skipTranslation as $columnName => $options) {
 				if (!in_array($row[$columnName], $options)) {
-					$matches = FALSE;
+					$matches = false;
 				}
 			}
 			if ($matches) {
-				return FALSE;
+				return false;
 			}
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	/**
 	 * @param array $row
 	 * @return string
 	 */
-	protected function getHideUnhideContent($row) {
+	protected function getHideUnhideContent($row)
+	{
 		$out = '';
 		$hiddenField = $GLOBALS['TCA']['tt_content']['ctrl']['enablecolumns']['disabled'];
 
@@ -362,7 +387,8 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 			}
 			$params = '&data[tt_content][' . $row['uid'] . '][' . $hiddenField . ']=' . $value;
 			$icon = $this->iconFactory->getIcon('actions-edit-' . strtolower($label), 'small');
-			$out = '<a href="' . htmlspecialchars(BackendUtility::getLinkToDataHandlerAction($params)) . '" title="' . $this->getLanguageService()->getLL($label, TRUE) . '">' . $icon . '</a>';
+			$out = '<a href="' . htmlspecialchars(BackendUtility::getLinkToDataHandlerAction($params)) . '" title="' . $this->getLanguageService()->getLL($label,
+					true) . '">' . $icon . '</a>';
 		}
 		return $out;
 	}
@@ -374,7 +400,8 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 	protected function getTranslationRecords($sourceUid)
 	{
 		$translations = [];
-		$translationRows = BackendUtility::getRecordsByField('tt_content', 'l10n_source', $sourceUid, '', '', 'uid ASC');
+		$translationRows = BackendUtility::getRecordsByField('tt_content', 'l10n_source', $sourceUid, '', '',
+			'uid ASC');
 		if ($translationRows) {
 			foreach ($translationRows as $translationRow) {
 				// This "if" is an actual "limit 1 per language"
@@ -389,7 +416,8 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 	/**
 	 * @return \TYPO3\CMS\Core\Page\PageRenderer
 	 */
-	protected function getPageRenderer() {
+	protected function getPageRenderer()
+	{
 		return $this->getPageLayoutController()->getModuleTemplate()->getPageRenderer();
 	}
 
