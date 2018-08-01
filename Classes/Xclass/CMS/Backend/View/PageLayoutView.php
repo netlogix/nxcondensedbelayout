@@ -129,17 +129,8 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 		}
 
 		$result = parent::tt_content_drawItem($row);
+		$translations = $this->getTranslationRecords($row['uid']);
 		if ($this->allowLanguageNotificationLinesForRecord($row)) {
-			$translations = [];
-			$translationRows = BackendUtility::getRecordsByField('tt_content', 'l18n_parent', $row['uid'], '', '', 'uid ASC');
-			if ($translationRows) {
-				foreach ($translationRows as $translationRow) {
-					// This "if" is an actual "limit 1 per language"
-					if (!isset($translations[$translationRow['sys_language_uid']])) {
-						$translations[$translationRow['sys_language_uid']] = $translationRow;
-					}
-				}
-			}
 			$languageLines = [];
 
 			$lineCounter = 0;
@@ -165,13 +156,15 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 			}
 
 			$result .= sprintf(self::TABLE_TEMPLATE, join('', $languageLines));
+		} elseif (count($translations)) {
+			// TODO: This element has a translation although it should not. Make visible.
 		}
 
 		return $result;
 	}
 
 	/**
-	 * Now the query gets enhanced by the "l18n_parent" pointer. This results in fetching
+	 * Now the query gets enhanced by the "l10n_source" pointer. This results in fetching
 	 * not only L=0 and L=-1 records but native foreign language records as well.
 	 *
 	 * This method mainly gets used by grid elements.
@@ -198,7 +191,7 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 	}
 
 	/**
-	 * Now the query gets enhanced by the "l18n_parent" pointer. This results in fetching
+	 * Now the query gets enhanced by the "l10n_source" pointer. This results in fetching
 	 * not only L=0 and L=-1 records but native foreign language records as well.
 	 *
 	 * This method mainly gets used by the PageLayout itself.
@@ -215,11 +208,11 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 			return parent::getContentRecordsPerColumn($table, $id, $columns, $additionalWhereClause);
 		}
 
-		if ($table !== 'table' || $this->getSelectedLanguage() === FALSE || $additionalWhereClause !== sprintf(' AND sys_language_uid IN (%d,-1)', $this->getSelectedLanguage())) {
+		if ($table !== 'table' || $this->getSelectedLanguage() === NULL || $additionalWhereClause !== sprintf('`sys_language_uid` IN (%d, -1)', $this->getSelectedLanguage())) {
 			return parent::getContentRecordsPerColumn($table, $id, $columns, $additionalWhereClause);
 		}
 
-		return parent::getContentRecordsPerColumn($table, $id, $columns, ' AND l18n_parent = 0' . $this->getLanguageRestrictionWhereClause());
+		return parent::getContentRecordsPerColumn($table, $id, $columns, 'l10n_source = 0' . $this->getLanguageRestrictionWhereClause());
 	}
 
 	/**
@@ -269,7 +262,7 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 	}
 
 	/**
-	 * Returns the additional where clause limiting tt_content to l18n_parent
+	 * Returns the additional where clause limiting tt_content to l10n_source
 	 * as well as a couple of langauge ids.
 	 *
 	 * @return string
@@ -282,7 +275,7 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 			$allowedLanguages[] = (int)$languageId;
 		}
 
-		return sprintf(' AND l18n_parent = 0 AND sys_language_uid IN (%s) ', join(',', $allowedLanguages));
+		return sprintf(' AND l10n_source = 0 AND sys_language_uid IN (%s)', join(',', $allowedLanguages));
 	}
 
 	/**
@@ -292,7 +285,7 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 	 *
 	 * @return bool
 	 */
-	protected function validModuleConfig() {
+	public function validModuleConfig() {
 		$pageLayoutController = $this->getPageLayoutController();
 		if ((int)$pageLayoutController->MOD_SETTINGS['function'] !== 1) {
 			/* Only the former "Columns" view gets adjusted. "Languages" and "QuickEdit" stay the way they are. */
@@ -307,9 +300,9 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 	 *
 	 * @return bool|int
 	 */
-	protected function getSelectedLanguage() {
+	public function getSelectedLanguage() {
 		if (!MathUtility::canBeInterpretedAsInteger($this->tt_contentConfig['sys_language_uid'])) {
-			return FALSE;
+			return NULL;
 
 		} else {
 			return (int)$this->tt_contentConfig['sys_language_uid'];
@@ -325,7 +318,7 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 	 * @return bool
 	 */
 	protected function allowLanguageNotificationLinesForRecord($row) {
-		if ($row['l18n_parent']) {
+		if ($row['l10n_source']) {
 			return FALSE;
 		}
 		if ($row['sys_language_uid'] > 0) {
@@ -372,6 +365,25 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView {
 			$out = '<a href="' . htmlspecialchars(BackendUtility::getLinkToDataHandlerAction($params)) . '" title="' . $this->getLanguageService()->getLL($label, TRUE) . '">' . $icon . '</a>';
 		}
 		return $out;
+	}
+
+	/**
+	 * @param int $sourceUid
+	 * @return array
+	 */
+	protected function getTranslationRecords($sourceUid)
+	{
+		$translations = [];
+		$translationRows = BackendUtility::getRecordsByField('tt_content', 'l10n_source', $sourceUid, '', '', 'uid ASC');
+		if ($translationRows) {
+			foreach ($translationRows as $translationRow) {
+				// This "if" is an actual "limit 1 per language"
+				if (!isset($translations[$translationRow['sys_language_uid']])) {
+					$translations[$translationRow['sys_language_uid']] = $translationRow;
+				}
+			}
+		}
+		return $translations;
 	}
 
 	/**

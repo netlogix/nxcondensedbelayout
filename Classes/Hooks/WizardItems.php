@@ -1,4 +1,5 @@
 <?php
+
 namespace Netlogix\Nxcondensedbelayout\Hooks;
 
 /**
@@ -15,16 +16,12 @@ namespace Netlogix\Nxcondensedbelayout\Hooks;
  */
 
 use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Backend\Controller\PageLayoutController;
 use TYPO3\CMS\Backend\Wizard\NewContentElementWizardHookInterface;
-use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\MathUtility;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 class WizardItems implements NewContentElementWizardHookInterface
 {
-
     /**
      * Modifies WizardItems array
      *
@@ -37,31 +34,10 @@ class WizardItems implements NewContentElementWizardHookInterface
      */
     public function manipulateWizardItems(&$wizardItems, &$parentObject)
     {
-        $returnUrl = GeneralUtility::_GET('returnUrl');
-        parse_str(parse_url($returnUrl)['query'], $queryString);
-
-        if (isset($queryString['SET']['language']) && $queryString['SET']['language'] != 0) {
-            $language = $queryString['SET']['language'];
-        } else {
-            // Load page TSconfig.
-            $pageTSconfig = BackendUtility::getPagesTSconfig($queryString['id']);
-            /** @var TypoScriptService $typoscriptService */
-            $typoscriptService = GeneralUtility::makeInstance(TypoScriptService::class);
-
-            $language = ObjectAccess::getPropertyPath(
-                $typoscriptService->convertTypoScriptArrayToPlainArray($pageTSconfig),
-                'TCAdefaults.tx_nxcondensedbelayout.defaultLanguageForNonContainers'
-            );
-            if (MathUtility::canBeInterpretedAsInteger($language)) {
-                $language = (int) $language;
-            } else {
-                $language = null;
-            }
-        }
+        $language = $this->getLanguage();
 
         foreach ($wizardItems as $key => $item) {
             if (
-                strpos($key, 'gridelements_grid') !== false ||
                 strpos($key, 'gridelements') !== false ||
                 strpos($key, 'plugins') !== false ||
                 in_array($key, ['special_menu', 'common_uploads'])
@@ -72,8 +48,7 @@ class WizardItems implements NewContentElementWizardHookInterface
                 if ($wizardItems[$key]['params']) {
                     $wizardItems[$key]['params'] .= '&defVals[tt_content][sys_language_uid]=-1';
                 }
-            } else if ($language !== null) {
-
+            } else {
                 if ($wizardItems[$key]['tt_content_defValues']) {
                     $wizardItems[$key]['tt_content_defValues']['sys_language_uid'] = $language;
                 }
@@ -82,5 +57,13 @@ class WizardItems implements NewContentElementWizardHookInterface
                 }
             }
         }
+    }
+
+    protected function getLanguage()
+    {
+        /** @var PageLayoutController $ctrl */
+        $pageLayoutController = GeneralUtility::makeInstance(PageLayoutController::class);
+        $pageLayoutController->init();
+        return (int)$pageLayoutController->current_sys_language;
     }
 }

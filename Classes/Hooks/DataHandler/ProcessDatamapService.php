@@ -78,7 +78,7 @@ class ProcessDatamapService implements SingletonInterface
 				tt_content AS defaultLanguage
 				LEFT JOIN
 					tt_content AS translationOverlay
-					ON defaultLanguage.uid = translationOverlay.l18n_parent
+					ON defaultLanguage.uid = translationOverlay.l10n_source
 			SET
 				translationOverlay.tx_gridelements_backend_layout = defaultLanguage.tx_gridelements_backend_layout
 			WHERE
@@ -111,7 +111,7 @@ class ProcessDatamapService implements SingletonInterface
         }
         foreach ($dataHandler->datamap['tt_content'] as $newUid => $record) {
             if (substr($newUid, 0, 3) === 'NEW' && $record['CType'] === 'shortcut' && !$record['sys_language_uid']) {
-                if ($record['l18n_parent'] > 0) {
+                if ($record['l10n_source'] > 0) {
                     unset($dataHandler->datamap['tt_content'][$newUid]);
                 } else {
                     $dataHandler->datamap['tt_content'][$newUid]['sys_language_uid'] = -1;
