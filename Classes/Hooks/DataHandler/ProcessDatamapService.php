@@ -102,7 +102,7 @@ class ProcessDatamapService implements SingletonInterface
      */
     protected function skipIndividualShortcutsForDifferentLanguages($dataHandler)
     {
-        if (!GeneralUtility::_GET('DDcopy')) {
+        if (!GeneralUtility::_GET('DDcopy') && !GeneralUtility::_GET('reference')) {
             // Gridelements "insert as reference" is indicated by the "DDcopy" argument.
             return;
         }
