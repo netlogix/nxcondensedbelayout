@@ -179,7 +179,7 @@ class ProcessDatamapService implements SingletonInterface
                 continue;
             }
 
-            $translationRecords = BackendUtility::getRecordsByField('tt_content', $GLOBALS['TCA']['tt_content']['ctrl']['transOrigPointerField'], $recordUid);
+            $translationRecords = BackendUtility::getRecordsByField('tt_content', $GLOBALS['TCA']['tt_content']['ctrl']['transOrigPointerField'], $recordUid) ?? [];
             foreach (array_column($translationRecords, 'uid') as $translationUid) {
                 $dataHandler->datamap['tt_content'][$translationUid] = array_merge(
                     $dataHandler->datamap['tt_content'][$translationUid] ?? [],
