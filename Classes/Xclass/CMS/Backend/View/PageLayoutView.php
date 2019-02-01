@@ -12,6 +12,9 @@ namespace Netlogix\Nxcondensedbelayout\Xclass\CMS\Backend\View;
 
 use TYPO3\CMS\Backend\Controller\PageLayoutController;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Restriction\BackendWorkspaceRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 
@@ -372,8 +375,8 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
 			}
 			$params = '&data[tt_content][' . $row['uid'] . '][' . $hiddenField . ']=' . $value;
 			$icon = $this->iconFactory->getIcon('actions-edit-' . strtolower($label), 'small');
-			$out = '<a href="' . htmlspecialchars(BackendUtility::getLinkToDataHandlerAction($params)) . '" title="' . $this->getLanguageService()->getLL($label,
-					true) . '">' . $icon . '</a>';
+			$title = $this->getLanguageService()->getLL($label);
+			$out = '<a href="' . htmlspecialchars(BackendUtility::getLinkToDataHandlerAction($params)) . '" title="' . $title . '">' . $icon . '</a>';
 		}
 		return $out;
 	}
@@ -384,9 +387,20 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
 	 */
 	protected function getTranslationRecords($sourceUid)
 	{
+		$queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
+		$queryBuilder->getRestrictions()
+			->removeAll()
+			->add(GeneralUtility::makeInstance(DeletedRestriction::class))
+			->add(GeneralUtility::makeInstance(BackendWorkspaceRestriction::class));
+
+		$translationRows = $queryBuilder
+			->select('*')
+			->from('tt_content')
+			->where($queryBuilder->expr()->eq('l10n_source', $queryBuilder->createNamedParameter($sourceUid, \PDO::PARAM_INT)))
+			->orderBy('uid', 'ASC')
+			->execute()->fetchAll();
+
 		$translations = [];
-		$translationRows = BackendUtility::getRecordsByField('tt_content', 'l10n_source', $sourceUid, '', '',
-			'uid ASC');
 		if ($translationRows) {
 			foreach ($translationRows as $translationRow) {
 				// This "if" is an actual "limit 1 per language"

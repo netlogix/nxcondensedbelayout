@@ -11,7 +11,10 @@ namespace Netlogix\Nxcondensedbelayout\Hooks\DataHandler;
  */
 
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
+use TYPO3\CMS\Core\Database\Query\Restriction\BackendWorkspaceRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -164,8 +167,23 @@ class ProcessDatamapService implements SingletonInterface
 				continue;
 			}
 
-			$translationRecords = BackendUtility::getRecordsByField('tt_content',
-				$GLOBALS['TCA']['tt_content']['ctrl']['transOrigPointerField'], $recordUid);
+			$queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
+			$queryBuilder->getRestrictions()
+				->removeAll()
+				->add(GeneralUtility::makeInstance(DeletedRestriction::class))
+				->add(GeneralUtility::makeInstance(BackendWorkspaceRestriction::class));
+
+			$translationRecords = $queryBuilder
+				->select('*')
+				->from('tt_content')
+				->andWhere(
+					$queryBuilder->expr()->eq(
+						$GLOBALS['TCA']['tt_content']['ctrl']['transOrigPointerField'],
+						$queryBuilder->createNamedParameter($recordUid, \PDO::PARAM_INT)
+					)
+				)
+				->execute()->fetchAll();
+
 			foreach (array_column($translationRecords, 'uid') as $translationUid) {
 				$dataHandler->datamap['tt_content'][$translationUid] = array_merge(
 					$dataHandler->datamap['tt_content'][$translationUid] ?? [],

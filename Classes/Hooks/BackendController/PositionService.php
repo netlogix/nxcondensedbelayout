@@ -10,18 +10,19 @@ namespace Netlogix\Nxcondensedbelayout\Hooks\BackendController;
  * source code.
  */
 
+use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Just add the required JS file for scrollpos handling
  */
-class PositionService implements \TYPO3\CMS\Core\SingletonInterface
+class PositionService implements SingletonInterface
 {
-	/**
-	 * @param array $hookConfiguration
-	 * @param \TYPO3\CMS\Backend\Controller\BackendController $backendController
-	 */
-	public function includeJavaScript($hookConfiguration, $backendController)
+
+	public function includeJavaScript()
 	{
-		$backendController->addJavascriptFile(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath('nxcondensedbelayout') . 'Resources/Public/Scripts/PositionService.min.js');
+		GeneralUtility::makeInstance(PageRenderer::class)->addJsFile('EXT:nxcondensedbelayout/Resources/Public/Scripts/PositionService.min.js');
 	}
 
 }

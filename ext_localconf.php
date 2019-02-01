@@ -17,14 +17,14 @@ call_user_func(function() {
 		'className' => \Netlogix\Nxcondensedbelayout\Xclass\Gridelements\Hooks\DrawItem::class,
 	];
 
-	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/backend.php']['renderPreProcess'][] = sprintf('%s->includeJavaScript', \Netlogix\Nxcondensedbelayout\Hooks\BackendController\PositionService::class);
+	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/backend.php']['constructPostProcess'][] = sprintf('%s->includeJavaScript', \Netlogix\Nxcondensedbelayout\Hooks\BackendController\PositionService::class);
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = \Netlogix\Nxcondensedbelayout\Hooks\DataHandler\ProcessDatamapService::class;
 });
 
 call_user_func(function() {
-    if (TYPO3_MODE != 'BE' || \TYPO3\CMS\Core\Utility\GeneralUtility::_GET('ajaxID') !== '/ajax/record/process') {
-        return;
-    }
-    $args = [];
-    \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction('Netlogix\\Nxcondensedbelayout\\Hooks\\DataHandler\\SkipLanguageChangingOnMove->guardLanguageRequestParameterForTtContent', $args, $args);
+	if (TYPO3_MODE != 'BE' || \TYPO3\CMS\Core\Utility\GeneralUtility::_GET('ajaxID') !== '/ajax/record/process') {
+		return;
+	}
+	$args = [];
+	\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction(\Netlogix\Nxcondensedbelayout\Hooks\DataHandler\SkipLanguageChangingOnMove::class . '->guardLanguageRequestParameterForTtContent', $args, $args);
 });
