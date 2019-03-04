@@ -19,6 +19,7 @@ call_user_func(function () {
 	if (TYPO3_MODE == 'BE') {
 		// Register wizard hook to manipulate gridelements default language
 		$GLOBALS['TYPO3_CONF_VARS']['cms']['db_new_content_el']['wizardItemsHook'][] = \Netlogix\Nxcondensedbelayout\Hooks\WizardItems::class;
+		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook'][] = \Netlogix\Nxcondensedbelayout\Hooks\WizardItems::class;
 	}
 	if (TYPO3_MODE === 'FE') {
 		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_page.php']['getRecordOverlay'][] = \Netlogix\Nxcondensedbelayout\Hooks\PageRepository\KeepContentNontranslatlableValuesInSync::class;
