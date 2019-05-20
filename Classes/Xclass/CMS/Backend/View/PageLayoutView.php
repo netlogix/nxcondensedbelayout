@@ -35,25 +35,31 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
 			<td>%s</td>
 		</tr>';
 
-	const POSITION_RUNNER = '
-		(function() {
+	const POSITION_RUNNER = /** @lang JavaScript */
+<<<'JavaScript'
+	(function() {
+		window.addEventListener('DOMContentLoaded', (DOMContentLoadedEvent) => {
 			try {
-
-				var namespace = window.parent.Ext.ns("TYPO3.Netlogix.Nxcondensedbelayout");
+				var Ext = window.parent.Ext;
+				var namespace = Ext.ns("TYPO3.Netlogix.Nxcondensedbelayout");
 				var positionService = namespace.positionService;
 				if (!positionService) {
 					return;
 				}
 
-				Ext.onReady(function() {
-					var body = Ext.fly("typo3-docbody"),
-					currentUrl = window.location.href.split("#")[0];
+				var run = function() {
+					var body = Ext.fly(document.querySelector('body div.module-body'));
+					var currentUrl = window.location.href.split("#")[0];
 					positionService.run(body, currentUrl);
-				});
+				};
+				Ext.isReady ? run() : Ext.onReady(run);
 
-			} catch (e) {};
-		})();
-	';
+			} catch (e) {
+				console.error('Could not register Nxcondensedbelayout.positionService.', e);
+			}
+		});
+	})();
+JavaScript;
 
 	protected $skipTranslations = [];
 
