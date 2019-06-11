@@ -5,7 +5,8 @@
 	"version": "2.0.0",
 	"require": {
 		"typo3/cms-core": "^8.6",
-		"gridelementsteam/gridelements": "^7.1 || ^8.2"
+		"gridelementsteam/gridelements": "^7.1 || ^8.2",
+		"cweagans/composer-patches": "^1.6"
 	},
 	"autoload": {
 		"psr-4": {

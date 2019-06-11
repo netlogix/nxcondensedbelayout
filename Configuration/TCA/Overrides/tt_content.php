@@ -17,3 +17,22 @@ if (!defined ('TYPO3_MODE')) {
 
 $GLOBALS['TCA']['tt_content']['ctrl']['copyAfterDuplFields'] = ',' . \TYPO3\CMS\Core\Utility\GeneralUtility::rmFromList('sys_language_uid', $GLOBALS['TCA']['tt_content']['ctrl']['copyAfterDuplFields']) . ',';
 $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['itemsProcFunc'] = 'Netlogix\\Nxcondensedbelayout\\Xclass\\Gridelements\\Backend\\ItemsProcFuncs\\CTypeList->itemsProcFunc';
+
+/*
+ * This only works because we have a composer patch file allowing the TCA
+ * to be cached individually per TYPO3_MODE. Usually TCA gets cached for
+ * BE and FE as the very same thing!
+ *
+ * Either make sure to allow patches from dependencies or copy the patch
+ * statement to your root composer.json.
+ */
+foreach (\Netlogix\Nxcondensedbelayout\Hooks\PageRepository\KeepContentNontranslatlableValuesInSync::NON_TRANSLATABLE_PROPERTIES as $columnName) {
+
+    if (TYPO3_MODE === 'FE') {
+        $GLOBALS['TCA']['tt_content']['columns'][$columnName]['l10n_mode'] = 'exclude';
+    }
+    if (TYPO3_MODE === 'BE') {
+        $GLOBALS['TCA']['tt_content']['columns'][$columnName]['l10n_display'] = 'defaultAsReadonly';
+    }
+
+}
