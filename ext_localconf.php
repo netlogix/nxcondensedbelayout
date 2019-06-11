@@ -19,6 +19,7 @@ call_user_func(function() {
 
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/backend.php']['constructPostProcess'][] = sprintf('%s->includeJavaScript', \Netlogix\Nxcondensedbelayout\Hooks\BackendController\PositionService::class);
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = \Netlogix\Nxcondensedbelayout\Hooks\DataHandler\ProcessDatamapService::class;
+	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_page.php']['getRecordOverlay'][] = \Netlogix\Nxcondensedbelayout\Hooks\PageRepository\KeepContentNontranslatlableValuesInSync::class;
 });
 
 call_user_func(function() {
