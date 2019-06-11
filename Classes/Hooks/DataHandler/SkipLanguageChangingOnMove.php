@@ -1,4 +1,5 @@
 <?php
+
 namespace Netlogix\Nxcondensedbelayout\Hooks\DataHandler;
 
 /*
@@ -19,34 +20,34 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class SkipLanguageChangingOnMove implements SingletonInterface
 {
-    protected $requiredUpdateFields = [
-        'colPos',
-        'tx_gridelements_container',
-        'tx_gridelements_columns',
-        'sys_language_uid'
-    ];
+	protected $requiredUpdateFields = [
+		'colPos',
+		'tx_gridelements_container',
+		'tx_gridelements_columns',
+		'sys_language_uid'
+	];
 
-    public function guardLanguageRequestParameterForTtContent()
-    {
-        if (!is_array(GeneralUtility::_GET('data'))) {
-            return;
-        }
-        $data = GeneralUtility::_GET('data');
-        if (count($data) !== 1) {
-            return;
-        }
-        if (!array_key_exists('tt_content', $data) || !is_array($data['tt_content'])) {
-            return;
-        }
-        if (count($data['tt_content']) !== 1) {
-            return;
-        }
-        $recordId = key($data['tt_content']);
-        $keys = array_intersect_key($data['tt_content'][$recordId], array_flip($this->requiredUpdateFields));
-        if (count($keys) !== count($this->requiredUpdateFields)) {
-            return;
-        }
-        unset($data['tt_content'][$recordId]['sys_language_uid']);
-        GeneralUtility::_GETset($data, 'data');
-    }
+	public function guardLanguageRequestParameterForTtContent()
+	{
+		if (!is_array(GeneralUtility::_GET('data'))) {
+			return;
+		}
+		$data = GeneralUtility::_GET('data');
+		if (count($data) !== 1) {
+			return;
+		}
+		if (!array_key_exists('tt_content', $data) || !is_array($data['tt_content'])) {
+			return;
+		}
+		if (count($data['tt_content']) !== 1) {
+			return;
+		}
+		$recordId = key($data['tt_content']);
+		$keys = array_intersect_key($data['tt_content'][$recordId], array_flip($this->requiredUpdateFields));
+		if (count($keys) !== count($this->requiredUpdateFields)) {
+			return;
+		}
+		unset($data['tt_content'][$recordId]['sys_language_uid']);
+		GeneralUtility::_GETset($data, 'data');
+	}
 }

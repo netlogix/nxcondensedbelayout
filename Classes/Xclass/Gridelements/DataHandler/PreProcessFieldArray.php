@@ -1,4 +1,5 @@
 <?php
+
 namespace Netlogix\Nxcondensedbelayout\Xclass\Gridelements\DataHandler;
 
 /*
@@ -17,20 +18,20 @@ use GridElementsTeam\Gridelements\DataHandler as GridElements;
  */
 class PreProcessFieldArray extends GridElements\PreProcessFieldArray
 {
-    const SYS_LANGUAGE_UID = 'sys_language_uid';
+	const SYS_LANGUAGE_UID = 'sys_language_uid';
 
-    /**
-     * @param array $fieldArray
-     * @return void
-     */
-    public function setFieldEntriesForGridContainers(array &$fieldArray)
-    {
-        $language = array_key_exists(self::SYS_LANGUAGE_UID, $fieldArray) ? $fieldArray[self::SYS_LANGUAGE_UID] : null;
-        parent::setFieldEntriesForGridContainers($fieldArray);
-        if (is_null($language)) {
-            unset($fieldArray[self::SYS_LANGUAGE_UID]);
-        } else {
-            $fieldArray[self::SYS_LANGUAGE_UID] = $language;
-        }
-    }
+	/**
+	 * @param array $fieldArray
+	 * @return void
+	 */
+	public function setFieldEntriesForGridContainers(array &$fieldArray)
+	{
+		$language = array_key_exists(self::SYS_LANGUAGE_UID, $fieldArray) ? $fieldArray[self::SYS_LANGUAGE_UID] : null;
+		parent::setFieldEntriesForGridContainers($fieldArray);
+		if (is_null($language)) {
+			unset($fieldArray[self::SYS_LANGUAGE_UID]);
+		} else {
+			$fieldArray[self::SYS_LANGUAGE_UID] = $language;
+		}
+	}
 }

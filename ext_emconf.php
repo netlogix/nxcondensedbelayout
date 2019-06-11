@@ -1,6 +1,6 @@
 <?php
 
-$EM_CONF[$_EXTKEY] = array(
+$EM_CONF[$_EXTKEY] = [
 	'title' => 'netlogix condensed backend layout',
 	'description' => '',
 	'category' => 'be',
@@ -19,18 +19,16 @@ $EM_CONF[$_EXTKEY] = array(
 	'clearCacheOnLoad' => 1,
 	'lockType' => '',
 	'author_company' => '',
-	'version' => '1.1.8',
-	'constraints' => array(
-		'depends' => array(
-			'typo3' => '6.2.0-7.99.99',
-			'gridelements' => '3.*-7.*',
-		),
-		'conflicts' => array(
-		),
-		'suggests' => array(
-		),
-	),
+	'version' => '2.0.0',
+	'constraints' => [
+		'depends' => [
+			'typo3' => '8.6.0-8.6.99',
+			'gridelements' => '7.1.0-8.2.99',
+		],
+		'conflicts' => [
+		],
+		'suggests' => [
+		],
+	],
 	'_md5_values_when_last_written' => '',
-);
-
-?>
+];
