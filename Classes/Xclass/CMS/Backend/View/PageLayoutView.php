@@ -38,7 +38,7 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
 	const POSITION_RUNNER = /** @lang JavaScript */
 <<<'JavaScript'
 	(function() {
-		window.addEventListener('DOMContentLoaded', (DOMContentLoadedEvent) => {
+		window.addEventListener('DOMContentLoaded', function() {
 			try {
 				var Ext = window.parent.Ext;
 				var namespace = Ext.ns("TYPO3.Netlogix.Nxcondensedbelayout");
