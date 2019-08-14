@@ -48,7 +48,7 @@ class CTypeList extends \GridElementsTeam\Gridelements\Backend\ItemsProcFuncs\CT
 		if ($considerLanguageParentDataForL10NMode) {
 			$row = $params['row'];
 
-			$languageParent = BackendUtility::getRecord('tt_content', $row['l10n_source']);
+			$languageParent = BackendUtility::getRecord('tt_content', $row['l18n_parent']);
 			if ($languageParent) {
 				foreach ($this->excludeFromLocalizationColumnNames as $columnName) {
 					$params['row'][$columnName] = $languageParent[$columnName];
@@ -81,7 +81,7 @@ class CTypeList extends \GridElementsTeam\Gridelements\Backend\ItemsProcFuncs\CT
 			return false;
 		}
 
-		if (!$row['l10n_source']) {
+		if (!$row['l18n_parent']) {
 			return false;
 		}
 
