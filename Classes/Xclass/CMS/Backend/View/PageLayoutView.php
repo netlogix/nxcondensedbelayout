@@ -171,7 +171,7 @@ JavaScript;
 	}
 
 	/**
-	 * Now the query gets enhanced by the "l10n_source" pointer. This results in fetching
+	 * Now the query gets enhanced by the "l18n_parent" pointer. This results in fetching
 	 * not only L=0 and L=-1 records but native foreign language records as well.
 	 *
 	 * This method mainly gets used by grid elements.
@@ -200,7 +200,7 @@ JavaScript;
 	}
 
 	/**
-	 * Now the query gets enhanced by the "l10n_source" pointer. This results in fetching
+	 * Now the query gets enhanced by the "l18n_parent" pointer. This results in fetching
 	 * not only L=0 and L=-1 records but native foreign language records as well.
 	 *
 	 * This method mainly gets used by the PageLayout itself.
@@ -224,7 +224,7 @@ JavaScript;
 		}
 
 		return parent::getContentRecordsPerColumn($table, $id, $columns,
-			'l10n_source = 0' . $this->getLanguageRestrictionWhereClause());
+			'l18n_parent = 0' . $this->getLanguageRestrictionWhereClause());
 	}
 
 	/**
@@ -276,7 +276,7 @@ JavaScript;
 	}
 
 	/**
-	 * Returns the additional where clause limiting tt_content to l10n_source
+	 * Returns the additional where clause limiting tt_content to l18n_parent
 	 * as well as a couple of langauge ids.
 	 *
 	 * @return string
@@ -290,7 +290,7 @@ JavaScript;
 			$allowedLanguages[] = (int)$languageId;
 		}
 
-		return sprintf(' AND l10n_source = 0 AND sys_language_uid IN (%s)', join(',', $allowedLanguages));
+		return sprintf(' AND l18n_parent = 0 AND sys_language_uid IN (%s)', join(',', $allowedLanguages));
 	}
 
 	/**
@@ -336,7 +336,7 @@ JavaScript;
 	 */
 	protected function allowLanguageNotificationLinesForRecord($row)
 	{
-		if ($row['l10n_source']) {
+		if ($row['l18n_parent']) {
 			return false;
 		}
 		if ($row['sys_language_uid'] !== 0) {
@@ -402,7 +402,7 @@ JavaScript;
 		$translationRows = $queryBuilder
 			->select('*')
 			->from('tt_content')
-			->where($queryBuilder->expr()->eq('l10n_source', $queryBuilder->createNamedParameter($sourceUid, \PDO::PARAM_INT)))
+			->where($queryBuilder->expr()->eq('l18n_parent', $queryBuilder->createNamedParameter($sourceUid, \PDO::PARAM_INT)))
 			->orderBy('uid', 'ASC')
 			->execute()->fetchAll();
 
