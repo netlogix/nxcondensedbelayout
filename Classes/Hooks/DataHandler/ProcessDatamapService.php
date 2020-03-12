@@ -1,6 +1,8 @@
 <?php
 namespace Netlogix\Nxcondensedbelayout\Hooks\DataHandler;
 
+use Netlogix\Nxcondensedbelayout\Hooks\PageRepository\KeepContentNontranslatlableValuesInSync;
+
 /***************************************************************
 *  Copyright notice
 *
@@ -76,7 +78,10 @@ class ProcessDatamapService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @return void
 	 */
 	public function processDatamap_afterDatabaseOperations($status, $table, $recordUid, array $fields, \TYPO3\CMS\Core\DataHandling\DataHandler $parentObject) {
-		if ($table !== 'tt_content' || !array_key_exists('tx_gridelements_backend_layout', $fields) || substr($recordUid, 0, 3) === 'NEW') {
+		if ($table !== 'tt_content' || substr($recordUid, 0, 3) === 'NEW') {
+			return;
+		}
+		if (!array_intersect(array_keys($fields), KeepContentNontranslatlableValuesInSync::NON_TRANSLATABLE_PROPERTIES)) {
 			return;
 		}
 
@@ -89,6 +94,8 @@ class ProcessDatamapService implements \TYPO3\CMS\Core\SingletonInterface {
 					tt_content AS translationOverlay
 					ON defaultLanguage.uid = translationOverlay.l18n_parent
 			SET
+				translationOverlay.tx_gridelements_container = defaultLanguage.tx_gridelements_container,
+				translationOverlay.tx_gridelements_columns = defaultLanguage.tx_gridelements_columns,
 				translationOverlay.tx_gridelements_backend_layout = defaultLanguage.tx_gridelements_backend_layout
 			WHERE
 				defaultLanguage.uid = %d
