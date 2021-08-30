@@ -1,9 +1,0 @@
-{
-	"extra": {
-		"patches": {
-			"typo3/cms": {
-				"!!! [FEATURE] Cache TCA per TYPO3_MODE": "Patches/typo3/cms/cache-tca-per-typo3_mode.patch"
-			}
-		}
-	}
-}

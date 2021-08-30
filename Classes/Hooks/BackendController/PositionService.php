@@ -10,8 +10,8 @@ namespace Netlogix\Nxcondensedbelayout\Hooks\BackendController;
  * source code.
  */
 
-use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -19,10 +19,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class PositionService implements SingletonInterface
 {
-
-	public function includeJavaScript()
-	{
-		GeneralUtility::makeInstance(PageRenderer::class)->addJsFile('EXT:nxcondensedbelayout/Resources/Public/Scripts/PositionService.min.js');
-	}
-
+    public function includeJavaScript()
+    {
+        $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
+        assert($pageRenderer instanceof PageRenderer);
+        $pageRenderer->loadRequireJsModule('TYPO3/CMS/Nxcondensedbelayout/PositionService');
+    }
 }

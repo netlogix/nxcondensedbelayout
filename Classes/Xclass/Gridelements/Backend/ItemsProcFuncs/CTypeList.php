@@ -17,75 +17,73 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
  */
 class CTypeList extends \GridElementsTeam\Gridelements\Backend\ItemsProcFuncs\CTypeList
 {
+    /**
+     * Those column names influence the CType items contents but are known to
+     * be "l10n_mode = exclude".
+     *
+     * @var array<string>
+     */
+    protected $excludeFromLocalizationColumnNames = [
+        'tx_gridelements_children',
+        'tx_gridelements_container',
+        'tx_gridelements_columns',
+        'tx_gridelements_backend_layout',
+        'colPos'
+    ];
 
-	/**
-	 * Those column names influence the CType items contents but are known to
-	 * be "l10n_mode = exclude".
-	 *
-	 * @var array<string>
-	 */
-	protected $excludeFromLocalizationColumnNames = array(
-		'tx_gridelements_children',
-		'tx_gridelements_container',
-		'tx_gridelements_columns',
-		'tx_gridelements_backend_layout',
-		'colPos'
-	);
+    /**
+     * In contrast to the original manipulation mechanism, this one considers
+     * some columns being known as "l10n_mode = exclude" and uses values of the
+     * l10n parent record instead.
+     *
+     * @param array $params
+     */
+    public function itemsProcFunc(array &$params)
+    {
+        $considerLanguageParentDataForL10NMode = $this->considerLanguageParentDataForL10NMode(
+            $params['table'],
+            $params['row']
+        );
 
-	/**
-	 * In contrast to the original manipulation mechanism, this one considers
-	 * some columns being known as "l10n_mode = exclude" and uses values of the
-	 * l10n parent record instead.
-	 *
-	 * @param array $params
-	 */
-	public function itemsProcFunc(array &$params)
-	{
+        if ($considerLanguageParentDataForL10NMode) {
+            $row = $params['row'];
 
-		$considerLanguageParentDataForL10NMode = $this->considerLanguageParentDataForL10NMode($params['table'],
-			$params['row']);
+            $languageParent = BackendUtility::getRecord('tt_content', $row['l18n_parent']);
+            if ($languageParent) {
+                foreach ($this->excludeFromLocalizationColumnNames as $columnName) {
+                    $params['row'][$columnName] = $languageParent[$columnName];
+                }
+            }
+        }
 
-		if ($considerLanguageParentDataForL10NMode) {
-			$row = $params['row'];
+        parent::itemsProcFunc($params);
 
-			$languageParent = BackendUtility::getRecord('tt_content', $row['l18n_parent']);
-			if ($languageParent) {
-				foreach ($this->excludeFromLocalizationColumnNames as $columnName) {
-					$params['row'][$columnName] = $languageParent[$columnName];
-				}
-			}
-		}
+        if ($considerLanguageParentDataForL10NMode) {
+            $params['row'] = $row;
+        }
+    }
 
-		parent::itemsProcFunc($params);
+    /**
+     * Returns TRUE if the given record should fetch additional data
+     * from its l10n parent, otherwise FALSE.
+     *
+     * @param array $row
+     * @return bool
+     */
+    protected function considerLanguageParentDataForL10NMode($tableName, $row)
+    {
+        if ($tableName !== 'tt_content') {
+            return false;
+        }
 
-		if ($considerLanguageParentDataForL10NMode) {
-			$params['row'] = $row;
-		}
+        if ($row['sys_language_uid'] <= 0) {
+            return false;
+        }
 
-	}
+        if (!$row['l18n_parent']) {
+            return false;
+        }
 
-	/**
-	 * Returns TRUE if the given record should fetch additional data
-	 * from its l10n parent, otherwise FALSE.
-	 *
-	 * @param array $row
-	 * @return bool
-	 */
-	protected function considerLanguageParentDataForL10NMode($tableName, $row)
-	{
-		if ($tableName !== 'tt_content') {
-			return false;
-		}
-
-		if ($row['sys_language_uid'] <= 0) {
-			return false;
-		}
-
-		if (!$row['l18n_parent']) {
-			return false;
-		}
-
-		return true;
-	}
-
+        return true;
+    }
 }

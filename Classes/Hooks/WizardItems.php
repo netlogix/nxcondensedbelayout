@@ -2,9 +2,16 @@
 
 namespace Netlogix\Nxcondensedbelayout\Hooks;
 
-use TYPO3\CMS\Backend\Controller\PageLayoutController;
+/*
+ * This file is part of the Netlogix.Nxcondensedbelayout extension.
+ *
+ * This package is Open Source Software. For the full copyright and license
+ * information, please view the LICENSE file which was distributed with this
+ * source code.
+ */
+
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\Wizard\NewContentElementWizardHookInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class WizardItems implements NewContentElementWizardHookInterface
 {
@@ -42,14 +49,9 @@ class WizardItems implements NewContentElementWizardHookInterface
 
     protected function getLanguage(): int
     {
-        $pageLayoutController = $this->getPageLayoutController();
-        $pageLayoutController->init();
-        return (int)$pageLayoutController->current_sys_language;
-    }
-
-    protected function getPageLayoutController(): PageLayoutController
-    {
-        return GeneralUtility::makeInstance(PageLayoutController::class);
+        $data = BackendUtility::getModuleData([], [], 'web_layout');
+        $language = (int)($data['language'] ?? 0);
+        return $language;
     }
 
     protected function setLanguageForWizardItem(array $wizardItem, int $language): array

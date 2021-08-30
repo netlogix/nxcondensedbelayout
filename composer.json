@@ -3,8 +3,8 @@
 	"type": "typo3-cms-extension",
 	"description": "",
 	"require": {
-		"typo3/cms-core": "^8.6",
-		"gridelementsteam/gridelements": "^7.1 || ^8.2",
+		"typo3/cms-core": "^10.4",
+		"gridelementsteam/gridelements": "^10.1",
 		"cweagans/composer-patches": "^1.6"
 	},
 	"autoload": {

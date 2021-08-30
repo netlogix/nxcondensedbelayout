@@ -2,9 +2,17 @@
 
 namespace Netlogix\Nxcondensedbelayout\Hooks\PageRepository;
 
+/*
+ * This file is part of the Netlogix.Nxcondensedbelayout extension.
+ *
+ * This package is Open Source Software. For the full copyright and license
+ * information, please view the LICENSE file which was distributed with this
+ * source code.
+ */
+
+use TYPO3\CMS\Core\Domain\Repository\PageRepository;
+use TYPO3\CMS\Core\Domain\Repository\PageRepositoryGetRecordOverlayHookInterface;
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Frontend\Page\PageRepository;
-use TYPO3\CMS\Frontend\Page\PageRepositoryGetRecordOverlayHookInterface;
 
 class KeepContentNontranslatlableValuesInSync implements PageRepositoryGetRecordOverlayHookInterface, SingletonInterface
 {

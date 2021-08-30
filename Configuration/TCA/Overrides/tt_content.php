@@ -1,6 +1,11 @@
 <?php
-if (!defined ('TYPO3_MODE')) {
-	die ('Access denied.');
+
+use Netlogix\Nxcondensedbelayout\Hooks\PageRepository\KeepContentNontranslatlableValuesInSync;
+use Netlogix\Nxcondensedbelayout\Xclass\Gridelements\Backend\ItemsProcFuncs\CTypeList;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
+if (!defined('TYPO3_MODE')) {
+    die ('Access denied.');
 }
 
 /*
@@ -15,24 +20,19 @@ if (!defined ('TYPO3_MODE')) {
  * is the either the only remaining element in list or the last one.
  */
 
-$GLOBALS['TCA']['tt_content']['ctrl']['copyAfterDuplFields'] = ',' . \TYPO3\CMS\Core\Utility\GeneralUtility::rmFromList('sys_language_uid', $GLOBALS['TCA']['tt_content']['ctrl']['copyAfterDuplFields']) . ',';
-$GLOBALS['TCA']['tt_content']['columns']['CType']['config']['itemsProcFunc'] = 'Netlogix\\Nxcondensedbelayout\\Xclass\\Gridelements\\Backend\\ItemsProcFuncs\\CTypeList->itemsProcFunc';
+(function () {
 
-/*
- * This only works because we have a composer patch file allowing the TCA
- * to be cached individually per TYPO3_MODE. Usually TCA gets cached for
- * BE and FE as the very same thing!
- *
- * Either make sure to allow patches from dependencies or copy the patch
- * statement to your root composer.json.
- */
-foreach (\Netlogix\Nxcondensedbelayout\Hooks\PageRepository\KeepContentNontranslatlableValuesInSync::NON_TRANSLATABLE_PROPERTIES as $columnName) {
+    $copyAfterDuplFields = $GLOBALS['TCA']['tt_content']['ctrl']['copyAfterDuplFields'];
+    $copyAfterDuplFields = GeneralUtility::rmFromList('sys_language_uid', $copyAfterDuplFields);
+    $copyAfterDuplFields = ',' . $copyAfterDuplFields . ',';
+    $GLOBALS['TCA']['tt_content']['ctrl']['copyAfterDuplFields'] = $copyAfterDuplFields;
 
-    if (TYPO3_MODE === 'FE') {
+    $itemsProcFunc = sprintf('%s->itemsProcFunc', CTypeList::class);
+    $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['itemsProcFunc'] = $itemsProcFunc;
+
+    foreach (KeepContentNontranslatlableValuesInSync::NON_TRANSLATABLE_PROPERTIES as $columnName) {
         $GLOBALS['TCA']['tt_content']['columns'][$columnName]['l10n_mode'] = 'exclude';
-    }
-    if (TYPO3_MODE === 'BE') {
         $GLOBALS['TCA']['tt_content']['columns'][$columnName]['l10n_display'] = 'defaultAsReadonly';
     }
+})();
 
-}
