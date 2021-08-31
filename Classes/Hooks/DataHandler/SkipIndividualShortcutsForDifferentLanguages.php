@@ -28,10 +28,6 @@ class SkipIndividualShortcutsForDifferentLanguages
 {
     public function processDatamap_beforeStart(DataHandler $dataHandler): void
     {
-        if (!GeneralUtility::_GET('DDcopy') && !GeneralUtility::_GET('reference')) {
-            // Gridelements "insert as reference" is indicated by the "DDcopy" argument.
-            return;
-        }
         if (!array_key_exists('tt_content', $dataHandler->datamap)) {
             return;
         }
