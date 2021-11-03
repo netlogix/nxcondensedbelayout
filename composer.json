@@ -13,8 +13,12 @@
 		}
 	},
 	"replace": {
+		"netlogix/nxcondensedbelayout": "self.version",
 		"nxcondensedbelayout": "self.version"
 	},
 	"extra": {
+		"typo3/cms": {
+			"extension-key": "nxcondensedbelayout"
+		}
 	}
 }
