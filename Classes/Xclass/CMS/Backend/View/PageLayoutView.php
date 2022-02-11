@@ -115,6 +115,7 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
         $pageId = (int)$row['pid'];
 
         $siteLanguages = $this->translations->getAvailableTranslationsForPage($pageId);
+        $siteLanguages = \array_filter($siteLanguages);
         if (!$siteLanguages) {
             return $result;
         }
